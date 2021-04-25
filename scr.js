@@ -7,7 +7,7 @@ console.log('let the game begin');
 const gnewsAPI = '40d80c397e4597e39735e58a0f81b3b0'; // gnews api key
 const newsAPI = '40d80c397e4597e39735e58a0f81b3b0'; // news.org api key
 let gnewsURL = `https://gnews.io/api/v4/top-headlines?lang=en&country=in&token=${gnewsAPI}`;
-let newsURL = `https://newsapi.org/v2/everything?domains=wsj.com&apiKey=${newsAPI}`;
+let newsURL = `https://newsapi.org/v2/top-headlines?country=in&apiKey=${newsAPI}`;
 
 // getting the container from html
 let newsAccordion = document.getElementById('newsAccordion');

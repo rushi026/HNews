@@ -17,26 +17,25 @@ let newsAccordion = document.getElementById('newsAccordion');
 let xhr = new XMLHttpRequest();
 xhr.open('GET', gnewsURL, true);
 
+let tobeAdd;
 // onload
-xhr.onload = function() {
-    if(this.status == 200){
+xhr.onload = function () {
+    if (this.status == 200) {
         let res = JSON.parse(this.responseText);
         let articles = res.articles;
-        console.log(articles);
-        let tobeAdd = ``;
-        articles.forEach(function (news,index) {
-            // console.log(index);
-            // console.log(news);
-
+        // console.log(articles);
+        tobeAdd = ``;
+        articles.forEach(function (news, index) {
+            
             let cardHtml = `
             <!-- cards inside collapse -->
-            <div class="accordion-item" id="accordion-item${index+1}">
-                <h2 class="accordion-header" id="heading${index+1}">
-                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${index+1}" aria-expanded="false" aria-controls="collapse${index+1}">
-                    <strong style="margin-right: 10px;">${index+1}</strong>. ${news['title']} 
+            <div class="accordion-item" id="accordion-item${index + 1}">
+                <h2 class="accordion-header" id="heading${index + 1}">
+                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${index + 1}" aria-expanded="false" aria-controls="collapse${index + 1}">
+                    <strong style="margin-right: 10px;"><b>${index + 1}.</b></strong> ${news['title']} 
                   </button>
                 </h2>
-                <div id="collapse${index+1}" class="accordion-collapse collapse" aria-labelledby="heading${index+1}" data-bs-parent="#newsAccordion">
+                <div id="collapse${index + 1}" class="accordion-collapse collapse" aria-labelledby="heading${index + 1}" data-bs-parent="#newsAccordion">
                   <div class="accordion-body">
                     ${news['content']}
                     <a href="${news['url']}" target="_blank">Read more</a>
@@ -46,18 +45,42 @@ xhr.onload = function() {
             <!-- ____________ -->
             `;
             tobeAdd += cardHtml;
-
             newsAccordion.innerHTML = tobeAdd;
         });
     }
-    else{
+    else {
         console.log('Something went wrong!');
     }
 }
 
-xhr.send(); // sending the request
+let today = new Date().getDate();
 
+let t = localStorage.getItem('HNews');
+if (t == null || t == undefined) {
+    xhr.send(); // sending the request
+    setLocal();
+}
+else {
+    t = JSON.parse(t);
+    if (t['date'] == today) {
+        let html = t['html'];
+        newsAccordion.innerHTML = html;
+    }
+    else {
+        xhr.send(); // sending the request
+        setLocal();
+    }
+}
 
+function setLocal(){
+    setInterval((e) => {
+        let temp = ``;
+        temp += newsAccordion.innerHTML;
+        // console.log(temp);
+        let htmlStr = { 'date': today, 'html': temp };
+        localStorage.setItem('HNews', JSON.stringify(htmlStr));
+    }, 3000);
+}
 
 
 // **************************** "GET request" can be also used instead
@@ -78,7 +101,7 @@ xhr.send(); // sending the request
 
 let searchNews = document.getElementById('searchNews');
 searchNews.addEventListener('input', (e) => {
-    let input = searchNews.value;
+    let input = searchNews.value.toLowerCase();
     let temp = document.getElementsByClassName('accordion-header');
     Array.from(temp).forEach(element => {
         let text = element.innerText;
@@ -86,11 +109,11 @@ searchNews.addEventListener('input', (e) => {
         let id = element.id;
         id = id.replace('heading', 'accordion-item');
         let tobeDisplayOrBlock;
-        if(text.includes(input)){
+        if (text.includes(input)) {
             tobeDisplayOrBlock = document.getElementById(id);
             tobeDisplayOrBlock.style.display = 'block';
         }
-        else{
+        else {
             tobeDisplayOrBlock = document.getElementById(id);
             tobeDisplayOrBlock.style.display = 'none';
         }

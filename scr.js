@@ -15,7 +15,7 @@ let newsAccordion = document.getElementById('newsAccordion');
 
 // ******************************* ajax get request *******************************
 let xhr = new XMLHttpRequest();
-xhr.open('GET', newsURL, true);
+xhr.open('GET', gnewsAPI, true);
 
 // onload
 xhr.onload = function() {

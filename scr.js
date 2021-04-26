@@ -1,3 +1,12 @@
+/*
+    Title:          HNews
+    Description:    HNews is the web app which shows us top news headlines and articles daily.
+    Date Created:   24/04/2021
+    Last Modified:  26/04/2021
+    Author:         Rushiraj Parekh
+*/
+
+
 console.log('let the game begin');
 
 // gnews api: 40d80c397e4597e39735e58a0f81b3b0
@@ -5,28 +14,25 @@ console.log('let the game begin');
 
 // variables initialization
 const gnewsAPI = '40d80c397e4597e39735e58a0f81b3b0'; // gnews api key
-const newsAPI = '40d80c397e4597e39735e58a0f81b3b0'; // news.org api key
+// const newsAPI = '40d80c397e4597e39735e58a0f81b3b0'; // news.org api key
 let gnewsURL = `https://gnews.io/api/v4/top-headlines?lang=en&country=in&token=${gnewsAPI}`;
-let newsURL = `https://newsapi.org/v2/top-headlines?country=in&apiKey=${newsAPI}`;
+// let newsURL = `https://newsapi.org/v2/top-headlines?country=in&apiKey=${newsAPI}`;
 
+let url = 'https://api.github.com/users';
 // getting the container from html
 let newsAccordion = document.getElementById('newsAccordion');
 
 
-// ******************************* ajax get request *******************************
-let xhr = new XMLHttpRequest();
-xhr.open('GET', gnewsURL, true);
-
-let tobeAdd;
-// onload
-xhr.onload = function () {
-    if (this.status == 200) {
-        let res = JSON.parse(this.responseText);
-        let articles = res.articles;
+// ****************************** request send by fetch api ****************************
+function sendRequest(){
+    fetch(gnewsURL).then((response) => {
+        return response.json();
+    }).then((data) => {
+        let articles = data.articles;
         // console.log(articles);
         tobeAdd = ``;
-        articles.forEach(function (news, index) {
-            
+
+        articles.forEach(function(news, index) {
             let cardHtml = `
             <!-- cards inside collapse -->
             <div class="accordion-item" id="accordion-item${index + 1}">
@@ -47,17 +53,58 @@ xhr.onload = function () {
             tobeAdd += cardHtml;
             newsAccordion.innerHTML = tobeAdd;
         });
-    }
-    else {
-        console.log('Something went wrong!');
-    }
+    });
 }
 
-let today = new Date().getDate();
+
+// ******************************* ajax get request *******************************
+// we can also send request by ajax XMLHttpRequest -------------
+// here this is shown how we can do that -------------------
+
+// let xhr = new XMLHttpRequest();
+// xhr.open('GET', gnewsURL, true);
+
+// let tobeAdd;
+// // onload
+// xhr.onload = function () {
+//     if (this.status == 200) {
+//         let res = JSON.parse(this.responseText);
+//         let articles = res.articles;
+//         // console.log(articles);
+//         tobeAdd = ``;
+//         articles.forEach(function (news, index) {
+            
+//             let cardHtml = `
+            // <!-- cards inside collapse -->
+            // <div class="accordion-item" id="accordion-item${index + 1}">
+            //     <h2 class="accordion-header" id="heading${index + 1}">
+            //       <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${index + 1}" aria-expanded="false" aria-controls="collapse${index + 1}">
+            //         <strong style="margin-right: 10px;"><b>${index + 1}.</b></strong> ${news['title']} 
+            //       </button>
+            //     </h2>
+            //     <div id="collapse${index + 1}" class="accordion-collapse collapse" aria-labelledby="heading${index + 1}" data-bs-parent="#newsAccordion">
+            //       <div class="accordion-body">
+            //         ${news['content']}
+            //         <a href="${news['url']}" target="_blank">Read more</a>
+            //       </div>
+            //     </div>
+            // </div>
+            // <!-- ____________ -->
+//             `;
+//             tobeAdd += cardHtml;
+//             newsAccordion.innerHTML = tobeAdd;
+//         });
+//     }
+//     else {
+//         console.log('Something went wrong!');
+//     }
+// }
+
+let today = new Date().getDate(); // getting today's date
 
 let t = localStorage.getItem('HNews');
 if (t == null || t == undefined) {
-    xhr.send(); // sending the request
+    sendRequest(); // sending the request
     setLocal();
 }
 else {
@@ -67,11 +114,13 @@ else {
         newsAccordion.innerHTML = html;
     }
     else {
-        xhr.send(); // sending the request
+        sendRequest(); // sending the request
         setLocal();
     }
 }
 
+
+// these lines of code is to set news in localstorage for one day
 function setLocal(){
     setInterval((e) => {
         let temp = ``;
@@ -79,7 +128,7 @@ function setLocal(){
         // console.log(temp);
         let htmlStr = { 'date': today, 'html': temp };
         localStorage.setItem('HNews', JSON.stringify(htmlStr));
-    }, 3000);
+    }, 4000);
 }
 
 
@@ -100,6 +149,7 @@ function setLocal(){
 
 
 let searchNews = document.getElementById('searchNews');
+// this code is just to search the news from the search box
 searchNews.addEventListener('input', (e) => {
     let input = searchNews.value.toLowerCase();
     let temp = document.getElementsByClassName('accordion-header');
@@ -120,3 +170,4 @@ searchNews.addEventListener('input', (e) => {
     });
 
 });
+// search news ends
